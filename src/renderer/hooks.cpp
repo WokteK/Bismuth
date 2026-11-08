@@ -279,18 +279,7 @@ class $modify(RendererGJBaseGameLayer, GJBaseGameLayer) {
     }
 };
 
-#include <Geode/modify/CCDisplayLinkDirector.hpp>
-class $modify(RendererCCDisplayLinkDirector, CCDisplayLinkDirector) {
-    void mainLoop() {
-        auto ren = Renderer::get();
-        if (!ren) {
-            CCDisplayLinkDirector::mainLoop();
-            return;
-        }
-
-        CCDisplayLinkDirector::mainLoop();
-    }
-};
+// Hook no-op de CCDisplayLinkDirector::mainLoop eliminado: sin direccion win en 2.2091
 
 class OnMenuLoad;
 

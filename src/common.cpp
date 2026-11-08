@@ -1,3 +1,4 @@
+#include <asp/fs/std.hpp>
 #include "common.hpp"
 #include "Geode/cocos/CCDirector.h"
 #include "renderer/Buffer.hpp"
@@ -94,7 +95,8 @@ class $modify(CommonCCDirector, CCDirector) {
 };
 
 std::optional<std::string> readResourceFile(const fs::path& path) {
-    std::ifstream t(Mod::get()->getResourcesDir() / path);
+    // Geode v6: getResourcesDir() devuelve asp::fs::Path
+    std::ifstream t(Mod::get()->getResourcesDir().toStdPath() / path);
     if (!t.is_open())
         return std::nullopt;
 

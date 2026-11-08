@@ -1,7 +1,7 @@
 {
-	"geode": "5.10.1",
+	"geode": "6.0.0-alpha.1",
 	"gd": {
-		"win": "2.2081"
+		"win": "2.2091"
 	},
 	"id": "iliashdz.bismuth",
 	"name": "Bismuth (experimental)",
@@ -9,7 +9,7 @@
 	"developer": "IliasHDZ",
 	"description": "Rendering optimization mod",
 	"dependencies": {
-		"geode.node-ids": ">=v1.20.0"
+		"geode.node-ids": ">=v1.23.3"
 	},
 	"tags": [
 		"performance",

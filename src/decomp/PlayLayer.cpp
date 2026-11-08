@@ -27,7 +27,7 @@ public:
 #define DYNAMIC_BITSET_SET(D, B) ( (D).m_bits[B >> 5] |= ( 1 << (B & 0x1f) ) )
 
 void decomp_PlayLayer::virtual_updateVisibility(float delta) {
-    float someValue = m_gameState.m_cameraPosition2.x + m_cameraWidth;
+    float someValue = m_gameState.m_cameraLastPosition.x + m_cameraWidth;
 
     // Windows only
 // #ifdef GEODE_IS_WINDOWS
@@ -125,7 +125,7 @@ void decomp_PlayLayer::virtual_updateVisibility(float delta) {
         bool isEnterEffectRight;
 
         if (object->m_enterType == -1) {
-            if (object->m_exitType == -1 && m_enterEffectPosition.x > m_gameState.m_cameraPosition2.x + m_halfCameraWidth)
+            if (object->m_exitType == -1 && m_enterEffectPosition.x > m_gameState.m_cameraLastPosition.x + m_halfCameraWidth)
                 goto thing; // it hurts my heart to use a goto
             isEnterEffectRight = false;
             enterEffectType = m_gameState.m_exitChannelMap[object->m_enterChannel];
@@ -237,10 +237,10 @@ void decomp_PlayLayer::virtual_updateVisibility(float delta) {
                 float relMod = getRelativeMod(fadePos, 0.02, 0.014285714, 0.0) * 255.0;
 
                 float someWidth1;
-                if (fadePos.x <= centerRightX + m_gameState.m_cameraPosition2.x)
-                    someWidth1 = (centerLeftX + m_gameState.m_cameraPosition2.x - fadePos.x) / std::max(centerLeftX - 30.f, 1.f);
+                if (fadePos.x <= centerRightX + m_gameState.m_cameraLastPosition.x)
+                    someWidth1 = (centerLeftX + m_gameState.m_cameraLastPosition.x - fadePos.x) / std::max(centerLeftX - 30.f, 1.f);
                 else
-                    someWidth1 = (fadePos.x - m_gameState.m_cameraPosition2.x - centerRightX) / std::max(someScreenLeft, 1.f);
+                    someWidth1 = (fadePos.x - m_gameState.m_cameraLastPosition.x - centerRightX) / std::max(someScreenLeft, 1.f);
 
                 someWidth1 = std::clamp(someWidth1, 0.0f, 1.0f);
 
