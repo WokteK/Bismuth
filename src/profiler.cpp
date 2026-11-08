@@ -9,7 +9,6 @@
 #include "renderer/Renderer.hpp"
 
 #include <Geode/modify/CCKeyboardDispatcher.hpp>
-#include <Geode/modify/CCDisplayLinkDirector.hpp>
 #include <Geode/modify/CCDirector.hpp>
 #include <Geode/modify/PlayLayer.hpp>
 #include <Geode/modify/LevelEditorLayer.hpp>
@@ -35,8 +34,10 @@ DECLARE_HOTKEY(KEY_P, {
     takeSnapshotNextFrame = true;
 });
 
-class $modify(MyCCDisplayLinkDirector, cocos2d::CCDisplayLinkDirector) {
-    void mainLoop() {
+// GD 2.2091: CCDisplayLinkDirector::mainLoop no tiene direccion win en los bindings;
+// se mide sobre CCDirector::drawScene (exportada por libcocos2d), que mainLoop invoca cada frame.
+class $modify(MyCCDirectorProfiler, cocos2d::CCDirector) {
+    void drawScene() {
         u64 processTime = 0;
 
         if (takeSnapshotNextFrame) {
@@ -49,7 +50,7 @@ class $modify(MyCCDisplayLinkDirector, cocos2d::CCDisplayLinkDirector) {
             processTime = getTime();
         }
 
-        CCDisplayLinkDirector::mainLoop();
+        CCDirector::drawScene();
         
         if (isTakingSnapshot) {
             isTakingSnapshot = false;
@@ -145,8 +146,7 @@ void removeTimer(GPUTimer* timer) {
 // _PROFILER_HOOK_VOID(cocos2d::CCNodeRGBA, setColor, const cocos2d::ccColor3B&);
 // _PROFILER_HOOK_VOID(cocos2d::CCNodeRGBA, updateDisplayedColor, const cocos2d::ccColor3B&);
 
-#include <Geode/modify/CCDisplayLinkDirector.hpp>
-_PROFILER_HOOK_VOID(cocos2d::CCDisplayLinkDirector, mainLoop);
+// _PROFILER_HOOK_VOID(cocos2d::CCDisplayLinkDirector, mainLoop); // sin direccion win en 2.2091
 
 #include <Geode/modify/CCDirector.hpp>
 _PROFILER_HOOK_VOID(cocos2d::CCDirector, drawScene);
