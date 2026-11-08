@@ -95,8 +95,12 @@ class $modify(CommonCCDirector, CCDirector) {
 };
 
 std::optional<std::string> readResourceFile(const fs::path& path) {
-    // Geode v6: getResourcesDir() devuelve asp::fs::Path
-    std::ifstream t(Mod::get()->getResourcesDir().toStdPath() / path);
+    // Geode v6: getResourcesDir() devuelve asp::fs::Path; toStdPath() devuelve Result
+    auto resourcesDir = Mod::get()->getResourcesDir().toStdPath();
+    if (!resourcesDir)
+        return std::nullopt;
+
+    std::ifstream t(resourcesDir.unwrap() / path);
     if (!t.is_open())
         return std::nullopt;
 
