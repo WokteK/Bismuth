@@ -240,10 +240,10 @@ class $modify(MyGameObject, GameObject) {
 
 #include <Geode/modify/PlayLayer.hpp>
 class $modify(MyPlayLayer, PlayLayer) {
-    bool init(GJGameLevel* level, bool useReplay, bool dontCreateObjects) {
+    bool init(GJGameLevel* level, bool dontCreateObjects) {
         pl = this;
 
-        if (!PlayLayer::init(level, useReplay, dontCreateObjects))
+        if (!PlayLayer::init(level, dontCreateObjects))
             return false;
 
         return true;
@@ -271,8 +271,8 @@ class $modify(MyPlayLayer, PlayLayer) {
         }
     }
 
-    bool init(GJGameLevel* level, bool useReplay, bool dontCreateObjects) {
-        if (!PlayLayer::init(level, useReplay, dontCreateObjects))
+    bool init(GJGameLevel* level, bool dontCreateObjects) {
+        if (!PlayLayer::init(level, dontCreateObjects))
             return false;
         
         thing = cocos2d::CCLabelBMFont::create("", "bigFont.fnt");

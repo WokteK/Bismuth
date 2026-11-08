@@ -17,8 +17,8 @@ class $modify(MyPlayLayer, PlayLayer) {
         newPlayLayer = false;
     }
 
-    bool init(GJGameLevel *level, bool useReplay, bool dontCreateObjects) {
-        bool ret = PlayLayer::init(level, useReplay, dontCreateObjects);
+    bool init(GJGameLevel* level, bool dontCreateObjects) {
+        bool ret = PlayLayer::init(level, dontCreateObjects);
         if (ret) {
             auto view = OverdrawView::create();
             if (view) {
