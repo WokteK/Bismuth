@@ -10,6 +10,26 @@ using namespace geode::prelude;
 static bool newPlayLayer = false;
 
 #include <Geode/modify/PlayLayer.hpp>
+// Se activa cuando el updateVisibility original corre con las optimizaciones de
+// Bismuth activas (frames con hitboxes). El original reactiva objetos del juego
+// que Bismuth habia desactivado; si quedan activos, el juego los dibuja encima
+// del renderer de Bismuth y la zona aparece duplicada.
+static bool s_vanillaVisibilityUsed = false;
+
+// Desactiva los objetos que el updateVisibility original dejo activos, igual que
+// Renderer::init al entrar en modo optimizado.
+static void deactivateVanillaObjects(GJBaseGameLayer* layer) {
+    if (!s_vanillaVisibilityUsed)
+        return;
+    s_vanillaVisibilityUsed = false;
+
+    for (int i = 0; i < layer->m_activeObjectsCount; i++) {
+        GameObject* object = layer->m_activeObjects[i];
+        if (object && object != layer->m_endPortal)
+            object->deactivateObject(true);
+    }
+}
+
 class $modify(MyPlayLayer, PlayLayer) {
     void setupHasCompleted() {
         newPlayLayer = true;
@@ -58,9 +78,14 @@ class $modify(MyPlayLayer, PlayLayer) {
         // prepara para dibujar las hitboxes de los objetos, y la version optimizada
         // lo omite. Bismuth ya soporta su renderer con el updateVisibility original
         // (modo sin optimizaciones), asi que la combinacion es valida.
-        if (renderer && renderer->useOptimizations() && !shouldDrawDebugHitboxes()) {
-            ((decomp_PlayLayer*)this)->optimized_updateVisibility(dt);
-            return;
+        if (renderer && renderer->useOptimizations()) {
+            if (!shouldDrawDebugHitboxes()) {
+                // Respaldo por si updateDebugDraw no corrio despues del original.
+                deactivateVanillaObjects(this);
+                ((decomp_PlayLayer*)this)->optimized_updateVisibility(dt);
+                return;
+            }
+            s_vanillaVisibilityUsed = true;
         }
 
         PlayLayer::updateVisibility(dt);
@@ -123,6 +148,14 @@ static void removeDecoObjects(CCArray* array) {
 
 #include <Geode/modify/GJBaseGameLayer.hpp>
 class $modify(RendererGJBaseGameLayer, GJBaseGameLayer) {
+    // Las hitboxes ya se calcularon con el estado del updateVisibility original;
+    // se desactivan los objetos antes de renderizar para que el juego no dibuje
+    // su propia copia del nivel encima de Bismuth.
+    void updateDebugDraw() {
+        GJBaseGameLayer::updateDebugDraw();
+        deactivateVanillaObjects(this);
+    }
+
     void update(float dt) {
         GJBaseGameLayer::update(dt);
 
