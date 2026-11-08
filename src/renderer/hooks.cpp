@@ -118,6 +118,19 @@ static void removeDecoObjects(CCArray* array) {
 
 #include <Geode/modify/GJBaseGameLayer.hpp>
 class $modify(RendererGJBaseGameLayer, GJBaseGameLayer) {
+    // El updateVisibility optimizado omite preUpdateVisibility, que calcula las
+    // secciones y objetos activos alrededor de la camara. updateDebugDraw usa esos
+    // datos para dibujar hitboxes, asi que sin el no aparece ninguna. Se ejecuta
+    // solo en los frames donde el juego va a dibujar hitboxes (muerte con
+    // "hitboxes on death" o hitboxes siempre activas).
+    void updateDebugDraw() {
+        auto renderer = Renderer::get();
+        if (renderer && renderer->useOptimizations() && shouldDrawDebugHitboxes())
+            preUpdateVisibility(0.f);
+
+        GJBaseGameLayer::updateDebugDraw();
+    }
+
     void update(float dt) {
         GJBaseGameLayer::update(dt);
 
